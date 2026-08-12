@@ -12,6 +12,12 @@ function mananaISO() {
   return d.toISOString().split("T")[0];
 }
 
+function esFinDeSemana(fechaISO: string) {
+  // "T00:00:00" evita problemas de zona horaria al parsear el string
+  const dia = new Date(fechaISO + "T00:00:00").getDay();
+  return dia === 0 || dia === 6; // 0 = domingo, 6 = sábado
+}
+
 export default function Home() {
   const [nombre, setNombre] = useState("");
   const [dia, setDia] = useState("");
@@ -30,6 +36,10 @@ export default function Home() {
     }
     if (dia < minDate) {
       setError("El día debe ser a partir de mañana.");
+      return;
+    }
+    if (esFinDeSemana(dia)) {
+      setError("Solo se pueden agendar días hábiles (lunes a viernes). Elige otra fecha.");
       return;
     }
 
@@ -53,8 +63,8 @@ export default function Home() {
     return (
       <div className="relative flex flex-col flex-1 items-center justify-center bg-black">
         <div className="absolute top-6 right-6">
-        <Image src="/Senti.png" alt="Logo" width={120} height={40} priority />       
-       </div>
+          <Image src="/Senti.png" alt="Logo" width={120} height={40} priority />
+        </div>
         <div className="flex w-full max-w-md flex-col items-center gap-4 rounded-2xl border border-purple-900/50 bg-gradient-to-b from-zinc-900 to-black p-10 text-center shadow-[0_0_40px_-10px_rgba(168,85,247,0.35)]">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-purple-600/20 text-2xl">
             ✓
@@ -85,7 +95,7 @@ export default function Home() {
   return (
     <div className="relative flex flex-col flex-1 items-center justify-center bg-black font-sans">
       <div className="absolute top-6 right-6">
-        <Image src="/Senti.png" alt="Logo" width={100} height={40} priority />       
+        <Image src="/Senti.png" alt="Logo" width={100} height={40} priority />
       </div>
       <main className="flex w-full max-w-md flex-col gap-6 rounded-2xl border border-purple-900/50 bg-gradient-to-b from-zinc-900 to-black p-10 shadow-[0_0_40px_-10px_rgba(168,85,247,0.35)]">
         <div className="flex flex-col gap-2 text-center sm:text-left">
@@ -94,7 +104,7 @@ export default function Home() {
           </h1>
           <p className="text-sm text-zinc-400">
             Selecciona el día en que asistirás. Solo están disponibles fechas
-            a partir de mañana.
+            a partir de mañana y días hábiles (lunes a viernes).
           </p>
         </div>
 
@@ -125,6 +135,7 @@ export default function Home() {
               onChange={(e) => setDia(e.target.value)}
               className="rounded-lg border border-purple-900/60 bg-black/60 px-3 py-2 text-white outline-none focus:border-purple-500 [color-scheme:dark]"
             />
+            <p className="text-xs text-zinc-500">No se agendan sábados ni domingos.</p>
           </div>
 
           {error && <p className="text-sm text-red-400">{error}</p>}
