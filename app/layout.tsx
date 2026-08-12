@@ -14,6 +14,9 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Agenda Capacitacion",
+  icons: {
+    icon: "star.png",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
