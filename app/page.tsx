@@ -6,16 +6,28 @@ import Image from "next/image";
 // 👉 Reemplaza esto con la URL de tu Web App de Apps Script
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-PpydeMgjDZvHvWI6E0gop5B7OE2tQFINVbsHzxIXnCRZFHc3Nr-615Y2cFauaVIy/exec"
 
-function mananaISO() {
-  const d = new Date();
-  d.setDate(d.getDate() + 1);
-  return d.toISOString().split("T")[0];
-}
+// 👉 Fechas puntuales que no están disponibles (además de sábados y domingos)
+const FECHAS_EXCLUIDAS = ["2026-08-13"]; // jueves, día siguiente a hoy
 
 function esFinDeSemana(fechaISO: string) {
-  // "T00:00:00" evita problemas de zona horaria al parsear el string
   const dia = new Date(fechaISO + "T00:00:00").getDay();
   return dia === 0 || dia === 6; // 0 = domingo, 6 = sábado
+}
+
+function esFechaExcluida(fechaISO: string) {
+  return FECHAS_EXCLUIDAS.includes(fechaISO);
+}
+
+function primerDiaDisponible() {
+  const d = new Date();
+  d.setDate(d.getDate() + 1); // empieza en "mañana"
+  while (true) {
+    const iso = d.toISOString().split("T")[0];
+    if (!esFinDeSemana(iso) && !esFechaExcluida(iso)) {
+      return iso;
+    }
+    d.setDate(d.getDate() + 1);
+  }
 }
 
 export default function Home() {
@@ -25,7 +37,7 @@ export default function Home() {
   const [enviado, setEnviado] = useState(false);
   const [error, setError] = useState("");
 
-  const minDate = mananaISO();
+  const minDate = primerDiaDisponible();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -35,11 +47,15 @@ export default function Home() {
       return;
     }
     if (dia < minDate) {
-      setError("El día debe ser a partir de mañana.");
+      setError(`El día debe ser a partir del ${minDate}.`);
       return;
     }
     if (esFinDeSemana(dia)) {
       setError("Solo se pueden agendar días hábiles (lunes a viernes). Elige otra fecha.");
+      return;
+    }
+    if (esFechaExcluida(dia)) {
+      setError("Esa fecha no está disponible. Elige otro día.");
       return;
     }
 
@@ -103,8 +119,8 @@ export default function Home() {
             Confirma tu día de capacitación
           </h1>
           <p className="text-sm text-zinc-400">
-            Selecciona el día en que asistirás. Solo están disponibles fechas
-            a partir de mañana y días hábiles (lunes a viernes).
+            Selecciona el día en que asistirás. Disponible a partir del{" "}
+            {minDate}, solo días hábiles (lunes a viernes).
           </p>
         </div>
 
@@ -135,7 +151,7 @@ export default function Home() {
               onChange={(e) => setDia(e.target.value)}
               className="rounded-lg border border-purple-900/60 bg-black/60 px-3 py-2 text-white outline-none focus:border-purple-500 [color-scheme:dark]"
             />
-            <p className="text-xs text-zinc-500">No se agendan sábados ni domingos.</p>
+            <p className="text-xs text-zinc-500">No se agendan sábados, domingos ni el jueves 13.</p>
           </div>
 
           {error && <p className="text-sm text-red-400">{error}</p>}
