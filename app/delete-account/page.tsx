@@ -9,8 +9,9 @@ const FECHA = "29 de septiembre de 2026";
 const RUTA_EN_APP = "Perfil > Configuración > Eliminar cuenta";
 const PLAZO_ELIMINACION = "30 días";
 const PLAZO_RESPUESTA = "5 días hábiles";
-const RETENCION_PAGOS = "4 años";
+const RETENCION_PAGOS = "5 años";
 const RETENCION_RESPALDOS = "90 días";
+const PLAZO_FALTA_PAGO = "3 meses";
 
 export const metadata: Metadata = {
   title: "Eliminación de cuenta",
@@ -37,7 +38,7 @@ const SECTIONS: Section[] = [
       },
       {
         type: "p",
-        text: "Su sesión se cerrará y la solicitud quedará registrada de inmediato.",
+        text: "Su sesión se cerrará, su suscripción se cancelará y la solicitud quedará registrada de inmediato.",
       },
     ],
   },
@@ -70,6 +71,7 @@ const SECTIONS: Section[] = [
         type: "table",
         headers: ["Tipo de dato", "Qué ocurre", "Plazo"],
         rows: [
+          ["Suscripción", "Se cancela y no se realizan más cobros", "De inmediato"],
           ["Nombre y correo electrónico", "Se eliminan", `Dentro de ${PLAZO_ELIMINACION}`],
           ["Contraseña", "Se elimina", `Dentro de ${PLAZO_ELIMINACION}`],
           ["Datos de ubicación", "Se eliminan", `Dentro de ${PLAZO_ELIMINACION}`],
@@ -116,14 +118,43 @@ const SECTIONS: Section[] = [
         items: [
           "La eliminación es permanente y no se puede deshacer.",
           "Perderá el acceso a su historial y a la información de su cuenta.",
+          "Su suscripción se cancelará automáticamente y no se realizarán más cobros.",
           "Si tiene pagos o transacciones pendientes, se procesarán antes de completar la eliminación.",
-          "Desinstalar la Aplicación no elimina su cuenta. Debe solicitarlo con alguna de las opciones anteriores.",
+          "Desinstalar la Aplicación no elimina su cuenta ni cancela su suscripción. Debe solicitarlo con alguna de las opciones anteriores.",
         ],
       },
     ],
   },
   {
-    title: "6. Contacto",
+    title: "6. Suscripción y eliminación de cuenta",
+    blocks: [
+      { type: "sub", text: "Si elimina su cuenta" },
+      {
+        type: "p",
+        text: "Al eliminar su cuenta, su suscripción se cancela automáticamente en ese momento. No se realizarán cobros futuros y sus datos se eliminan según lo descrito en la sección 3.",
+      },
+      { type: "sub", text: "Si cancela su suscripción o deja de pagarla" },
+      {
+        type: "p",
+        text: "Su cuenta no se elimina de inmediato. Si usted cancela la suscripción o el pago no se realiza en la fecha correspondiente, ocurre lo siguiente:",
+      },
+      {
+        type: "list",
+        items: [
+          "La suscripción se da de baja y su cuenta pasa a estado inactivo.",
+          `Si la cuenta permanece sin suscripción activa durante ${PLAZO_FALTA_PAGO}, se elimina automáticamente junto con sus datos asociados.`,
+          "Antes de la eliminación le enviaremos un aviso al correo registrado.",
+          "Si reactiva su suscripción antes de que se cumpla ese plazo, su cuenta y su información se conservan sin cambios.",
+        ],
+      },
+      {
+        type: "p",
+        text: "En todos los casos se aplican las mismas reglas de la sección 3: se eliminan los datos personales y se conservan únicamente los registros de pagos durante el plazo que exige la ley.",
+      },
+    ],
+  },
+  {
+    title: "7. Contacto",
     blocks: [
       {
         type: "p",
